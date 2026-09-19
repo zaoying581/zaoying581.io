@@ -2,6 +2,20 @@
 <html lang="zh-CN">
   <head>
     <script type="module" crossorigin src="./assets/polyfills-DLiIomT4.js"></script>
+    
+    <script>
+      // 最简单的注销Service Worker代码
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(reg) { reg.unregister(); });
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(keys) {
+          keys.forEach(function(key) { caches.delete(key); });
+        });
+      }
+    </script>
 
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
