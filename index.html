@@ -18,9 +18,427 @@
       body { font-family: 'PingFang SC','Hiragino Sans GB','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background: #f7f5f0; color: #2c2416; }
       #root { min-height: 100vh; }
       .noscript-warning { display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px; font-size: 16px; color: #8b8275; }
+      
+      /* Subject icons replaced with images */
+      .subj-ico {
+        border-radius: 50% !important;
+        width: 44px !important;
+        height: 44px !important;
+        background-size: cover !important;
+        background-position: center !important;
+        overflow: hidden;
+        font-size: 0 !important;
+      }
+      .subj-ico svg { display: none; }
     </style>
     <script type="module" crossorigin src="./assets/index-D8L9mwsT.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-BTjkdvp5.css">
+    <script>
+      // 注销所有Service Worker，清除缓存
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+        // 清除所有缓存
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (let name of names) {
+              caches.delete(name);
+            }
+          });
+        }
+      }
+    </script>
+    <script>
+      // Replace subject icons with images
+      function replaceSubjectIcons() {
+        const subjectMap = {
+          '语文': 'chinese.png',
+          '数学': 'math.png',
+          '英语': 'english.png',
+          '物理': 'physics.png',
+          '化学': 'chemistry.png',
+          '地理': 'geography.png'
+        };
+        
+        document.querySelectorAll('.subj-head').forEach(head => {
+          const nameEl = head.querySelector('.subj-name');
+          const icoEl = head.querySelector('.subj-ico');
+          if (!nameEl || !icoEl) return;
+          
+          const name = nameEl.textContent.trim();
+          if (subjectMap[name]) {
+            icoEl.style.backgroundImage = `url('./subjects/${subjectMap[name]}')`;
+            icoEl.style.backgroundSize = 'cover';
+            icoEl.style.backgroundPosition = 'center';
+            icoEl.textContent = '';
+            icoEl.style.fontSize = '0';
+            
+            // Move name to left of icon
+            head.style.flexDirection = 'row';
+            nameEl.style.order = '-1';
+          }
+        });
+      }
+      
+      // Replace home greeting text
+      function replaceGreeting() {
+        // Find home page greeting title
+        const greetTitles = document.querySelectorAll('.greet-title');
+        greetTitles.forEach(title => {
+          if (title.textContent.includes('今天也要') || title.textContent.includes('闪闪发光')) {
+            title.innerHTML = '我が名は<span class="accent">シャドウ</span>。';
+          }
+        });
+      }
+      
+      // Add "加料" button to goals page
+      function addAddButton() {
+        // Check if already added
+        if (document.querySelector('.add-goal-btn-custom')) return;
+        
+        // Find goals page by looking for "记录目标" title
+        const greetTitles = document.querySelectorAll('.greet-title');
+        let goalsPage = null;
+        greetTitles.forEach(title => {
+          if (title.textContent.includes('记录') && title.textContent.includes('目标')) {
+            goalsPage = title.closest('.page');
+          }
+        });
+        
+        if (!goalsPage) return;
+        
+        // Add button at top
+        const btn = document.createElement('button');
+        btn.className = 'add-goal-btn-custom btn btn-primary';
+        btn.textContent = '✨ 加料';
+        btn.style.cssText = 'margin: 0 0 16px; width: 100%; border-radius: 16px; padding: 14px; font-size: 1rem; font-weight: 600;';
+        btn.onclick = openAddGoalModal;
+        
+        const greet = goalsPage.querySelector('.greet');
+        if (greet) {
+          greet.after(btn);
+        }
+      }
+      
+      // Open add goal modal
+      function openAddGoalModal() {
+        // Create modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.5);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        `;
+        
+        const content = document.createElement('div');
+        content.style.cssText = `
+          background: white;
+          border-radius: 24px;
+          padding: 24px;
+          width: 100%;
+          max-width: 400px;
+          max-height: 80vh;
+          overflow-y: auto;
+        `;
+        
+        content.innerHTML = `
+          <h3 style="margin: 0 0 20px; font-size: 1.25rem; font-weight: 700;">✨ 加料</h3>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 12px; font-size: 0.875rem; font-weight: 600; color: #666;">选择科目</label>
+            <div id="add-goal-subjects" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+              <button class="subject-row" data-subject="chinese" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/chinese.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">语文</span>
+              </button>
+              <button class="subject-row" data-subject="math" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/math.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">数学</span>
+              </button>
+              <button class="subject-row" data-subject="english" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/english.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">英语</span>
+              </button>
+              <button class="subject-row" data-subject="physics" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/physics.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">物理</span>
+              </button>
+              <button class="subject-row" data-subject="chemistry" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/chemistry.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">化学</span>
+              </button>
+              <button class="subject-row" data-subject="geography" style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #f8f8f8;
+                cursor: pointer;
+                transition: all 0.2s;
+                width: 100%;
+                text-align: left;
+              ">
+                <div style="
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  background-image: url('./subjects/geography.png');
+                  background-size: cover;
+                  background-position: center;
+                  flex-shrink: 0;
+                "></div>
+                <span style="font-size: 0.95rem; font-weight: 500; color: #333;">地理</span>
+              </button>
+            </div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-size: 0.875rem; font-weight: 600; color: #666;">目标内容</label>
+            <input id="add-goal-text" type="text" placeholder="例如：完成数学练习册第3章" style="
+              width: 100%;
+              padding: 12px;
+              border: 1px solid #e0e0e0;
+              border-radius: 12px;
+              font-size: 1rem;
+              box-sizing: border-box;
+            ">
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button id="add-goal-cancel" style="
+              flex: 1;
+              padding: 12px;
+              border: 1px solid #e0e0e0;
+              border-radius: 12px;
+              background: white;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+            ">取消</button>
+            <button id="add-goal-confirm" style="
+              flex: 1;
+              padding: 12px;
+              border: none;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #c47f3a, #d4a06a);
+              color: white;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+            ">确认加料</button>
+          </div>
+        `;
+        
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        
+        // Subject selection
+        let selectedSubject = null;
+        const subjectNames = {
+          'chinese': '语文',
+          'math': '数学',
+          'english': '英语',
+          'physics': '物理',
+          'chemistry': '化学',
+          'geography': '地理'
+        };
+        
+        content.querySelectorAll('.subject-row').forEach(row => {
+          row.onclick = () => {
+            // Remove all selected
+            content.querySelectorAll('.subject-row').forEach(r => {
+              r.style.borderColor = 'transparent';
+              r.style.background = '#f8f8f8';
+            });
+            // Add selected
+            row.style.borderColor = '#c47f3a';
+            row.style.background = '#faf0e3';
+            selectedSubject = row.dataset.subject;
+          };
+        });
+        
+        // Cancel button
+        content.querySelector('#add-goal-cancel').onclick = () => {
+          document.body.removeChild(modal);
+        };
+        
+        // Confirm button
+        content.querySelector('#add-goal-confirm').onclick = () => {
+          if (!selectedSubject) {
+            alert('请先选择科目');
+            return;
+          }
+          const text = content.querySelector('#add-goal-text').value.trim();
+          if (!text) {
+            alert('请输入目标内容');
+            return;
+          }
+          
+          // Save to localStorage
+          const today = new Date();
+          const dateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+          
+          let allData = {};
+          try {
+            allData = JSON.parse(localStorage.getItem('cd_v5') || '{}');
+          } catch {}
+          
+          if (!allData[dateKey]) {
+            allData[dateKey] = {
+              teacherSubjectRecords: {},
+              todayGoals: {},
+              tomorrowGoals: {},
+              myRecords: {},
+              aiPlan: '',
+              aiAnalysis: '',
+              reflection: ''
+            };
+          }
+          
+          if (!allData[dateKey].todayGoals[selectedSubject]) {
+            allData[dateKey].todayGoals[selectedSubject] = [];
+          }
+          
+          allData[dateKey].todayGoals[selectedSubject].push({
+            id: 'goal_' + Date.now(),
+            text: text,
+            done: false
+          });
+          
+          localStorage.setItem('cd_v5', JSON.stringify(allData));
+          
+          // Close modal and reload
+          document.body.removeChild(modal);
+          location.reload();
+        };
+        
+        // Click outside to close
+        modal.onclick = (e) => {
+          if (e.target === modal) {
+            document.body.removeChild(modal);
+          }
+        };
+      }
+      
+      // Run after page loads
+      setTimeout(() => {
+        replaceSubjectIcons();
+        replaceGreeting();
+        addAddButton();
+      }, 1000);
+      setInterval(() => {
+        replaceSubjectIcons();
+        replaceGreeting();
+        addAddButton();
+      }, 1000);
+    </script>
     <script type="module">import'data:text/javascript,if(!import.meta.resolve)throw Error("import.meta.resolve not supported")';import.meta.url;import("_").catch(()=>1);(async function*(){})().next();window.__vite_is_modern_browser=true</script>
     <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
   </head>
