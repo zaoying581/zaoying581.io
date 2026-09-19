@@ -9,22 +9,80 @@
     <meta name="theme-color" content="#c47f3a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="学习助手" />
+    <meta name="apple-mobile-web-app-title" content="Mikou" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="./manifest.json" />
-    <title>AI 学习助手</title>
+    <title>Mikou</title>
     <style>
       /* Fallback for browsers without CSS variables support */
       body { font-family: 'PingFang SC','Hiragino Sans GB','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background: #f7f5f0; color: #2c2416; }
       #root { min-height: 100vh; }
       .noscript-warning { display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px; font-size: 16px; color: #8b8275; }
+      
+      /* Miko watermark */
+      .miko-watermark {
+        position: fixed;
+        pointer-events: none;
+        z-index: 0;
+        font-size: 4rem;
+        font-weight: 900;
+        color: #c47f3a;
+        opacity: 0.06;
+        letter-spacing: -0.05em;
+        text-transform: lowercase;
+      }
+      .miko-watermark-tl {
+        top: 80px;
+        left: -20px;
+        transform: rotate(-15deg);
+      }
+      .miko-watermark-br {
+        bottom: 100px;
+        right: -20px;
+        transform: rotate(15deg);
+      }
+      
+      /* Decorative character */
+      .decor-char {
+        position: fixed;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.12;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .decor-char img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .decor-char-1 {
+        bottom: 100px;
+        right: 20px;
+        width: 120px;
+        height: 120px;
+      }
+      .decor-char-2 {
+        top: 120px;
+        left: 20px;
+        width: 80px;
+        height: 80px;
+      }
     </style>
-    <script type="module" crossorigin src="./assets/index-Pgg9KN-2.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-OmA1IIBd.css">
+    <script type="module" crossorigin src="./assets/index-D8L9mwsT.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BTjkdvp5.css">
     <script type="module">import'data:text/javascript,if(!import.meta.resolve)throw Error("import.meta.resolve not supported")';import.meta.url;import("_").catch(()=>1);(async function*(){})().next();window.__vite_is_modern_browser=true</script>
     <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
   </head>
   <body>
+    <div class="miko-watermark miko-watermark-tl">miko</div>
+    <div class="miko-watermark miko-watermark-br">miko</div>
+    <div class="decor-char decor-char-1">
+      <img src="./decor/img1.png" alt="" />
+    </div>
+    <div class="decor-char decor-char-2">
+      <img src="./decor/img2.png" alt="" />
+    </div>
     <div id="root">
       <noscript>
         <div class="noscript-warning">
@@ -34,6 +92,6 @@
     </div>
     <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
     <script nomodule crossorigin id="vite-legacy-polyfill" src="./assets/polyfills-legacy-Bp4j6ixH.js"></script>
-    <script nomodule crossorigin id="vite-legacy-entry" data-src="./assets/index-legacy-CUND_Y0I.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+    <script nomodule crossorigin id="vite-legacy-entry" data-src="./assets/index-legacy-B4jA0FS0.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
   </body>
 </html>
