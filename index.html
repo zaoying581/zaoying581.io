@@ -44,6 +44,29 @@
         font-size: 0 !important;
       }
       .subj-ico svg { display: none; }
+      
+      /* 蒙版渐变文字 */
+      .masked-title {
+        position: relative;
+        display: inline-block;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .masked-title__text {
+        background: linear-gradient(135deg, #c47f3a 0%, #d4a06a 25%, #e8b878 50%, #c47f3a 75%, #b06a2a 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease infinite;
+      }
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
     </style>
     <script type="module" crossorigin src="./assets/index-D8L9mwsT.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-BTjkdvp5.css">
@@ -223,6 +246,21 @@
           };
         }
         
+        // 替换标题为蒙版渐变文字
+        function replaceMaskedTitle() {
+          if (document.querySelector('.masked-title')) return;
+          
+          var header = document.querySelector('.header');
+          if (!header) return;
+          var titleDiv = header.querySelector('.header-title');
+          if (!titleDiv) return;
+          
+          var oldText = titleDiv.textContent.trim();
+          if (oldText === 'Mikou' || oldText.indexOf('拾光') !== -1 || oldText.indexOf('学习助手') !== -1) {
+            titleDiv.innerHTML = '<div class="masked-title"><span class="masked-title__text">Mikou</span></div>';
+          }
+        }
+        
         // 加加料按钮到今日目标卡片
         function addAddButton() {
           if (document.querySelector('.add-goal-btn-custom')) return;
@@ -256,12 +294,14 @@
         setTimeout(function() {
           replaceSubjectIcons();
           replaceGreeting();
+          replaceMaskedTitle();
           addAddButton();
         }, 1500);
         
         setInterval(function() {
           replaceSubjectIcons();
           replaceGreeting();
+          replaceMaskedTitle();
           addAddButton();
         }, 1000);
         
